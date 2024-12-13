@@ -1,6 +1,6 @@
 // api/gpt.js
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // CORS Headers to allow your Cargo site to communicate with this backend
   res.setHeader('Access-Control-Allow-Origin', 'https://loopv1-copy.cargo.site'); // Your Cargo site URL
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -71,5 +71,4 @@ export default async function handler(req, res) {
     console.error('Error calling OpenAI API:', error);
     res.status(500).json({ error: 'Error calling OpenAI API.' });
   }
-}
-
+};
