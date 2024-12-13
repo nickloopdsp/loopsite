@@ -1,18 +1,21 @@
 // api/gpt.js
+
 export default async function handler(req, res) {
-  // CORS Headers
+  // CORS Headers to allow your Cargo site to communicate with this backend
   res.setHeader('Access-Control-Allow-Origin', 'https://loopv1-copy.cargo.site'); // Your Cargo site URL
-  res.setHeader('Access-Control-Allow-Methods', 'POST');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   // Handle preflight OPTIONS request
   if (req.method === 'OPTIONS') {
+    console.log('Handling preflight OPTIONS request');
     res.status(200).end();
     return;
   }
 
   // Only allow POST requests
   if (req.method !== 'POST') {
+    console.log(`Method not allowed: ${req.method}`);
     res.status(405).json({ error: 'Method not allowed. Use POST.' });
     return;
   }
@@ -20,11 +23,14 @@ export default async function handler(req, res) {
   const { message } = req.body;
 
   if (!message) {
+    console.log('No message provided in the request');
     res.status(400).json({ error: 'No message provided.' });
     return;
   }
 
   try {
+    console.log(`Received message: "${message}"`);
+
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -37,6 +43,8 @@ export default async function handler(req, res) {
       })
     });
 
+    console.log(`OpenAI API responded with status: ${response.status}`);
+
     // Check if the response from OpenAI is OK
     if (!response.ok) {
       const errorData = await response.json();
@@ -46,6 +54,8 @@ export default async function handler(req, res) {
 
     const data = await response.json();
 
+    console.log('OpenAI API response data:', JSON.stringify(data));
+
     // Ensure the response structure is as expected
     if (!data.choices || !data.choices[0] || !data.choices[0].message || !data.choices[0].message.content) {
       console.error('Unexpected OpenAI API response structure:', data);
@@ -53,6 +63,9 @@ export default async function handler(req, res) {
     }
 
     const botReply = data.choices[0].message.content;
+
+    console.log(`Bot reply: "${botReply}"`);
+
     res.status(200).json({ reply: botReply });
   } catch (error) {
     console.error('Error calling OpenAI API:', error);
