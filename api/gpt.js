@@ -1,7 +1,7 @@
 // api/gpt.js
 export default async function handler(req, res) {
   // CORS Headers
-  res.setHeader('Access-Control-Allow-Origin', 'https://your-cargo-site.com'); // Replace with your actual Cargo site URL
+  res.setHeader('Access-Control-Allow-Origin', 'https://loopv1-copy.cargo.site'); // Your Cargo site URL
   res.setHeader('Access-Control-Allow-Methods', 'POST');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -13,13 +13,15 @@ export default async function handler(req, res) {
 
   // Only allow POST requests
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed. Use POST.' });
+    res.status(405).json({ error: 'Method not allowed. Use POST.' });
+    return;
   }
 
   const { message } = req.body;
 
   if (!message) {
-    return res.status(400).json({ error: 'No message provided.' });
+    res.status(400).json({ error: 'No message provided.' });
+    return;
   }
 
   try {
