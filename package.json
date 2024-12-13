@@ -1,0 +1,7 @@
+{
+  "name": "loopsite",
+  "version": "1.0.0",
+  "description": "Backend for OpenAI Chatbot",
+  "type": "module",
+  "dependencies": {}
+}
