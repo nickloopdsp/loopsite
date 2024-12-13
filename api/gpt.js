@@ -2,7 +2,7 @@
 
 export default async function handler(req, res) {
   // CORS Headers to allow your Cargo site to communicate with this backend
-  res.setHeader('Access-Control-Allow-Origin', 'https://loopv1-copy.cargo.site'); // Your Cargo site URL
+  res.setHeader('Access-Control-Allow-Origin', 'https://loopv1-copy.cargo.site'); // Replace with your Cargo site URL
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
@@ -20,7 +20,27 @@ export default async function handler(req, res) {
     return;
   }
 
-  const { message } = req.body;
+  // Ensure that Content-Type is application/json
+  if (req.headers['content-type'] !== 'application/json') {
+    console.log(`Unsupported Content-Type: ${req.headers['content-type']}`);
+    res.status(415).json({ error: 'Unsupported Media Type. Use application/json.' });
+    return;
+  }
+
+  // Parse the JSON body manually
+  let body = '';
+  try {
+    for await (const chunk of req) {
+      body += chunk;
+    }
+    body = JSON.parse(body);
+  } catch (error) {
+    console.error('Error parsing request body:', error);
+    res.status(400).json({ error: 'Invalid JSON' });
+    return;
+  }
+
+  const { message } = body;
 
   if (!message) {
     console.log('No message provided in the request');
